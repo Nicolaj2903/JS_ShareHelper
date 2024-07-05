@@ -263,9 +263,10 @@ form {
 
 input {
   font-size: 18px;
+  /* padding: 10px 10px 10px 5px; */
   padding: 10px 10px 10px 5px;
   display: block;
-  width: 300px;
+  width: 310px;
   border: none;
   border-bottom: 1px solid #757575;
   background-color: transparent;
@@ -290,10 +291,27 @@ label {
 }
 
 /* active state */
-input:focus~label,
+/* input:focus~label,
 input:valid~label {
   top: -20px;
   font-size: 14px;
+  color: #5264AE;
+} */
+
+/* input:focus~label,
+input:not(:placeholder-shown)~label {
+  top: -10px;
+  left: -calc(100% + 5px);
+  font-size: 14px;
+  color: #5264AE;
+} */
+
+input:focus~label,
+input:not(:placeholder-shown)~label {
+  top: 10px;
+  left: -10px;
+  transform: translateX(-100%);
+  font-size: 18px;
   color: #5264AE;
 }
 

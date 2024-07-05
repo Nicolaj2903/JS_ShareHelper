@@ -61,3 +61,20 @@ function capitalGain() {
     };
 };
 
+
+
+
+// Dynamic placement of label when values are added to the input fields
+<script>
+  document.querySelectorAll('.group input').forEach(input => {
+        input.addEventListener('input', () => {
+            const label = input.nextElementSibling;
+            if (input.value) {
+                const inputWidth = input.value.length * 10 + 10; // Beregn bredde baseret på inputværdi
+                label.style.left = `${inputWidth}px`; // Juster label placering
+            } else {
+                label.style.left = '5px'; // Standard placering
+            }
+        });
+  });
+</script>
