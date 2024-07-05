@@ -28,9 +28,9 @@ btns.forEach(function (btn) {
 
 function reset() {
     returnValue.textContent = 0;
-    currentPriceInput.value = 0;
-    salesPriceInput.value = 0;
-    shareAmountInput.value = 0;
+    currentPriceInput.value = "";
+    salesPriceInput.value = "";
+    shareAmountInput.value = "";
 
     returnValue.style.color = "#222";
 };
@@ -60,21 +60,3 @@ function capitalGain() {
         returnValue.style.color = "#222";
     };
 };
-
-
-
-
-// Dynamic placement of label when values are added to the input fields
-<script>
-  document.querySelectorAll('.group input').forEach(input => {
-        input.addEventListener('input', () => {
-            const label = input.nextElementSibling;
-            if (input.value) {
-                const inputWidth = input.value.length * 10 + 10; // Beregn bredde baseret på inputværdi
-                label.style.left = `${inputWidth}px`; // Juster label placering
-            } else {
-                label.style.left = '5px'; // Standard placering
-            }
-        });
-  });
-</script>
