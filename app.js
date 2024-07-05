@@ -11,7 +11,7 @@ const salesPriceInput = document.getElementById("salesPrice");
 const shareAmountInput = document.getElementById("shareAmount");
 
 
-// FUNCTIONS
+// Event listeners
 btns.forEach(function (btn) {
     btn.addEventListener("click", function (e) {
         const styles = e.currentTarget.classList;
@@ -20,27 +20,25 @@ btns.forEach(function (btn) {
             capitalGain();
         } else if (styles.contains("procent")) {
             // Beregn procent afkast
+            calculateProcentage();
         } else {
             reset();
         }
     });
 });
 
-function reset() {
-    returnValue.textContent = 0;
-    currentPriceInput.value = "";
-    salesPriceInput.value = "";
-    shareAmountInput.value = "";
-
-    returnValue.style.color = "#222";
-};
-
 function capitalGain() {
     let currentPrice = currentPriceInput.value;
     let salesPrice = salesPriceInput.value;
     let shareAmount = shareAmountInput.value;
 
-    let profitPerShare = salesPrice - currentPrice;
+    if (isNaN(currentPrice) || isNaN(salesPrice) || isNaN(shareAmount)) {
+        returnValue.textContent = "Ugyldig input";
+        returnValue.style.color = "red";
+        return;
+    }
+
+    let profitPerShare = shareDifference();
     let profit = shareAmount * profitPerShare;
 
     let brokerage = 20; // 20 kr. i kurtage
@@ -50,13 +48,45 @@ function capitalGain() {
     profit *= tax;
 
 
-    returnValue.textContent = parseFloat(profit).toFixed(1);
+    returnValue.textContent = parseFloat(profit).toFixed(1) + " kr";
+    colorDecider(profit);
+};
 
-    if (profit > 0) {
+function shareDifference() {
+    let currentPrice = currentPriceInput.value;
+    let salesPrice = salesPriceInput.value;
+
+    return salesPrice - currentPrice;
+};
+
+function colorDecider(value) {
+    if (value > 0) {
         returnValue.style.color = "green";
-    } else if (profit < 0) {
+    } else if (value < 0) {
         returnValue.style.color = "red";
     } else {
         returnValue.style.color = "#222";
     };
+};
+
+
+function calculateProcentage() {
+    let currentPrice = currentPriceInput.value;
+    let calculatedProcentage = 0;
+
+    let profitPerShare = shareDifference();
+    calculatedProcentage = (profitPerShare / currentPrice) * 100;
+
+    colorDecider(calculatedProcentage);
+
+    returnValue.textContent = calculatedProcentage + "%";
+};
+
+function reset() {
+    returnValue.textContent = 0;
+    currentPriceInput.value = "";
+    salesPriceInput.value = "";
+    shareAmountInput.value = "";
+
+    returnValue.style.color = "#222";
 };
