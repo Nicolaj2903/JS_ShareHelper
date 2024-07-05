@@ -19,7 +19,6 @@ btns.forEach(function (btn) {
         if (styles.contains("afkast")) {
             capitalGain();
         } else if (styles.contains("procent")) {
-            // Beregn procent afkast
             calculateProcentage();
         } else {
             reset();
@@ -27,6 +26,41 @@ btns.forEach(function (btn) {
     });
 });
 
+// event.keyCode === 13 <=> Pressing Enter
+currentPriceInput.addEventListener("keydown", function (event) {
+    if (event.ctrlKey && event.keyCode === 13) {
+        event.preventDefault();
+        reset();
+    } else if (event.keyCode === 13) {
+        event.preventDefault();
+        capitalGain();
+    }
+});
+
+salesPriceInput.addEventListener("keydown", function (event) {
+    if (event.ctrlKey && event.keyCode === 13) {
+        event.preventDefault();
+        reset();
+    } else if (event.keyCode === 13) {
+        event.preventDefault();
+        capitalGain();
+    }
+});
+
+shareAmountInput.addEventListener("keydown", function (event) {
+    if (event.ctrlKey && event.keyCode === 13) {
+        event.preventDefault();
+        reset();
+    } else if (event.keyCode === 13) {
+        event.preventDefault();
+        capitalGain();
+    }
+});
+
+
+
+
+// Functions
 function capitalGain() {
     let currentPrice = currentPriceInput.value;
     let salesPrice = salesPriceInput.value;
@@ -47,8 +81,10 @@ function capitalGain() {
     profit -= brokerage;
     profit *= tax;
 
+    let formattedNumber = formatNumber(profit);
 
-    returnValue.textContent = parseFloat(profit).toFixed(1) + " kr";
+    // returnValue.textContent = parseFloat(formattedNumber).toFixed(1) + " kr";
+    returnValue.textContent = formattedNumber + " kr";
     colorDecider(profit);
 };
 
@@ -57,6 +93,19 @@ function shareDifference() {
     let salesPrice = salesPriceInput.value;
 
     return salesPrice - currentPrice;
+};
+
+function formatNumber(number) {
+    if (isNaN(number)) {
+        return "Invalid Number";
+    }
+
+    const parts = number.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+    let formattedNumber = parts.join(",");
+
+    return formattedNumber;
 };
 
 function colorDecider(value) {
