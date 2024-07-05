@@ -10,6 +10,15 @@ const currentPriceInput = document.getElementById("currentPrice");
 const salesPriceInput = document.getElementById("salesPrice");
 const shareAmountInput = document.getElementById("shareAmount");
 
+// General text
+const missingInputWarning = "Udfyld felter";
+const invalidInputWarning = "Ugyldig input";
+
+// Colors
+const red = "red";
+const green = "green";
+const grey = "#222";
+
 
 // Event listeners
 btns.forEach(function (btn) {
@@ -17,9 +26,14 @@ btns.forEach(function (btn) {
         const styles = e.currentTarget.classList;
 
         if (styles.contains("afkast")) {
-            capitalGain();
+
+            if (validateInputsAfkastBtn()) {
+                capitalGain();
+            }
         } else if (styles.contains("procent")) {
-            calculateProcentage();
+            if (validateInputsProcentBtn()) {
+                calculateProcentage();
+            }
         } else {
             reset();
         }
@@ -33,7 +47,9 @@ currentPriceInput.addEventListener("keydown", function (event) {
         reset();
     } else if (event.keyCode === 13) {
         event.preventDefault();
-        capitalGain();
+        if (validateInputsAfkastBtn()) {
+            capitalGain();
+        }
     }
 });
 
@@ -43,7 +59,9 @@ salesPriceInput.addEventListener("keydown", function (event) {
         reset();
     } else if (event.keyCode === 13) {
         event.preventDefault();
-        capitalGain();
+        if (validateInputsAfkastBtn()) {
+            capitalGain();
+        }
     }
 });
 
@@ -53,22 +71,63 @@ shareAmountInput.addEventListener("keydown", function (event) {
         reset();
     } else if (event.keyCode === 13) {
         event.preventDefault();
-        capitalGain();
+        if (validateInputsAfkastBtn()) {
+            capitalGain();
+        }
     }
 });
 
-
-
-
 // Functions
+function validateInputsAfkastBtn() {
+    let currentPrice = parseFloat(currentPriceInput.value);
+    let salesPrice = parseFloat(salesPriceInput.value);
+    let shareAmount = parseFloat(shareAmountInput.value);
+
+    if (isNaN(currentPrice) || isNaN(salesPrice) || isNaN(shareAmount)) {
+        returnValue.textContent = missingInputWarning;
+        returnValue.style.color = red;
+        return false;
+    }
+
+    if (currentPrice < 0 || salesPrice < 0 || shareAmount < 0) {
+        returnValue.textContent = missingInputWarning;
+        returnValue.style.color = red;
+        return false;
+    }
+
+    returnValue.textContent = "";
+    return true;
+}
+
+function validateInputsProcentBtn() {
+    let currentPrice = parseFloat(currentPriceInput.value);
+    let salesPrice = parseFloat(salesPriceInput.value);
+    let shareAmount = parseFloat(shareAmountInput.value);
+
+    if (isNaN(currentPrice) || isNaN(salesPrice)) {
+        returnValue.textContent = missingInputWarning;
+        returnValue.style.color = red;
+        return false;
+    }
+
+    if (currentPrice < 0 || salesPrice < 0 || shareAmount < 0) {
+        returnValue.textContent = missingInputWarning;
+        returnValue.style.color = red;
+        return false;
+    }
+
+    returnValue.textContent = "";
+    return true;
+}
+
 function capitalGain() {
     let currentPrice = currentPriceInput.value;
     let salesPrice = salesPriceInput.value;
     let shareAmount = shareAmountInput.value;
 
     if (isNaN(currentPrice) || isNaN(salesPrice) || isNaN(shareAmount)) {
-        returnValue.textContent = "Ugyldig input";
-        returnValue.style.color = "red";
+        returnValue.textContent = invalidInputWarning;
+        returnValue.style.color = red;
         return;
     }
 
@@ -97,24 +156,27 @@ function shareDifference() {
 
 function formatNumber(number) {
     if (isNaN(number)) {
-        return "Invalid Number";
+        return invalidInputWarning;
     }
 
-    const parts = number.toString().split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    number = Number(number);
 
-    let formattedNumber = parts.join(",");
-
-    return formattedNumber;
+    if (Number.isInteger(number)) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    } else {
+        let parts = number.toFixed(1).toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        return parts.join(",");
+    }
 };
 
 function colorDecider(value) {
     if (value > 0) {
-        returnValue.style.color = "green";
+        returnValue.style.color = green;
     } else if (value < 0) {
-        returnValue.style.color = "red";
+        returnValue.style.color = red;
     } else {
-        returnValue.style.color = "#222";
+        returnValue.style.color = grey;
     };
 };
 
@@ -128,7 +190,7 @@ function calculateProcentage() {
 
     colorDecider(calculatedProcentage);
 
-    returnValue.textContent = calculatedProcentage + "%";
+    returnValue.textContent = calculatedProcentage.toFixed(1) + "%";
 };
 
 function reset() {
@@ -137,5 +199,5 @@ function reset() {
     salesPriceInput.value = "";
     shareAmountInput.value = "";
 
-    returnValue.style.color = "#222";
+    returnValue.style.color = grey;
 };
