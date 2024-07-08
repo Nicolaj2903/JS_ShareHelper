@@ -4,11 +4,13 @@ const returnValue = document.getElementById("value");
 
 // Buttons
 const btns = document.querySelectorAll(".btn");
+const toggleModeButton = document.querySelector(".mode-toggle");
 
 // Inputs
 const currentPriceInput = document.getElementById("currentPrice");
 const salesPriceInput = document.getElementById("salesPrice");
 const shareAmountInput = document.getElementById("shareAmount");
+const inputs = document.querySelectorAll(".form-input");
 
 // General text
 const missingInputWarning = "Udfyld felter";
@@ -36,6 +38,23 @@ btns.forEach(function (btn) {
             }
         } else {
             reset();
+        }
+    });
+});
+
+inputs.forEach((input, index) => {
+    input.addEventListener("keydown", (event) => {
+        if (event.ctrlKey && event.key === "ArrowUp") {
+            event.preventDefault();
+
+            const previousIndex = (index - 1 + inputs.length) % inputs.length;
+            inputs[previousIndex].focus();
+        }
+
+        if (event.ctrlKey && event.key === 'ArrowDown') {
+            event.preventDefault();
+            const nextIndex = (index + 1) % inputs.length;
+            inputs[nextIndex].focus();
         }
     });
 });
@@ -76,6 +95,7 @@ shareAmountInput.addEventListener("keydown", function (event) {
         }
     }
 });
+
 
 // Functions
 function validateInputsAfkastBtn() {
