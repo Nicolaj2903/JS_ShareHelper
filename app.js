@@ -44,14 +44,14 @@ btns.forEach(function (btn) {
 
 inputs.forEach((input, index) => {
     input.addEventListener("keydown", (event) => {
-        if (event.ctrlKey && event.key === "ArrowUp") {
+        if (event.ctrlKey && event.key === "ArrowUp" || event.key === "ArrowLeft") {
             event.preventDefault();
 
             const previousIndex = (index - 1 + inputs.length) % inputs.length;
             inputs[previousIndex].focus();
         }
 
-        if (event.ctrlKey && event.key === 'ArrowDown') {
+        if (event.ctrlKey && event.key === 'ArrowDown' || event.key === "ArrowRight") {
             event.preventDefault();
             const nextIndex = (index + 1) % inputs.length;
             inputs[nextIndex].focus();
