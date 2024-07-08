@@ -142,7 +142,6 @@ function capitalGain() {
 
     let formattedNumber = formatNumber(profit);
 
-    // returnValue.textContent = parseFloat(formattedNumber).toFixed(1) + " kr";
     returnValue.textContent = formattedNumber + " kr";
     colorDecider(profit);
 };
