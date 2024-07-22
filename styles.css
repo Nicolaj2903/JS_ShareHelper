@@ -380,6 +380,8 @@ input:focus~.highlight {
 .tooltip-container {
   position: relative;
   display: inline-block;
+  margin-top: -10px;
+  /* Move the tooltip up or down relative to the dropdown menu */
 }
 
 .tooltip-text {
