@@ -38,7 +38,7 @@ const currencies = {
 
 // Event listeners
 currencyDropdown.addEventListener("change", function () {
-    toggleVekselgebyr();
+    toggleExchangeFee();
 });
 
 btns.forEach(function (btn) {
@@ -268,7 +268,7 @@ function reset() {
     returnValue.style.color = grey;
 }
 
-function toggleVekselgebyr() {
+function toggleExchangeFee() {
     const vekselgebyrGroup = document.getElementById("vekselgebyrGroup");
     const selectedCurrency = currencyDropdown.value.toLowerCase();
 
@@ -280,5 +280,5 @@ function toggleVekselgebyr() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    toggleVekselgebyr();
+    toggleExchangeFee();
 });

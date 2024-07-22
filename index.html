@@ -13,19 +13,15 @@
 </head>
 
 <body>
+  <!-- <p class="footer">
+    <a href="https://github.com/Nicolaj2903/JS_ShareHelper.git" target="_blank">Project</a> by <a
+      href="https://github.com/Nicolaj2903" target="_blank">Nicolaj</a>
+  </p> -->
   <main>
     <div class="container">
       <span id="value">0</span>
 
       <div class="button-container">
-        <div class="dropdown-container">
-          <select class="dropdown-currency" id="currencyDropdown">
-            <option value="dkk">DKK</option>
-            <option value="usd">USD</option>
-            <option value="euro">EURO</option>
-          </select>
-
-        </div>
         <button class="btn afkast">Afkast</button>
         <button class="btn reset">Reset</button>
         <button class="btn procent">Procent</button>
@@ -51,13 +47,16 @@
           <input type="number" id="vekselgebyr" placeholder=" " class="form-input veksel">
           <label for="vekselgebyr">Vekselgebyr</label>
         </div>
-
       </form>
 
-      <p class="footer">
-        <a href="https://github.com/Nicolaj2903/JS_ShareHelper.git" target="_blank">Project</a> by <a
-          href="https://github.com/Nicolaj2903" target="_blank">Nicolaj</a>
-      </p>
+      <div class="dropdown-container">
+        <select class="dropdown-currency" id="currencyDropdown">
+          <option value="dkk">DKK</option>
+          <option value="usd">USD</option>
+          <option value="euro">EURO</option>
+        </select>
+      </div>
+
       <span class="tooltip-container">
         <i class="bi bi-question-circle"></i>
         <span class="tooltip-text">

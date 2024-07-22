@@ -424,11 +424,29 @@ input:focus~.highlight {
   margin-top: 20px;
 }
 
+/* Dropdown menu to the right */
+/* .dropdown-container {
+  margin-top: -5px;
+  margin-left: calc(-50% + 36px);
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.dropdown-container select {
+  width: auto;
+  max-width: 100%;
+} */
+
+
 .dropdown-container {
-  position: absolute;
-  bottom: 0;
-  right: 92.5%;
-  margin-right: 1rem;
+  margin-top: -5px;
+  margin-bottom: 20px;
+  position: relative;
+  text-align: center;
+}
+
+.dropdown-container select {
+  display: inline-block;
 }
 
 .dropdown-currency {
