@@ -290,6 +290,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateVekselgebyrField() {
         const selectedCurrency = currencyDropdown.value;
 
+        reset()
+
         // Check if the input field already exists
         let vekselgebyrGroup = document.getElementById("vekselgebyrGroup");
 
