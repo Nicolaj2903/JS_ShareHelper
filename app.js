@@ -18,11 +18,12 @@ const btns = document.querySelectorAll(".btn");
 const currentPriceInput = document.getElementById("currentPrice");
 const salesPriceInput = document.getElementById("salesPrice");
 const shareAmountInput = document.getElementById("shareAmount");
-const exchangeFeeInput = document.getElementById("vekselgebyr");
-const inputs = document.querySelectorAll(".form-input");
+let exchangeFeeInput = document.getElementById("vekselgebyr");
+let inputs = Array.from(document.querySelectorAll(".form-input"));
+// Array.from() - converts NodeList to an array to access array methods, map(), filter(), reduce()
 
 // Dropdown
-const currencyDropdown = document.querySelector(".dropdown-currency");
+const currencyDropdown = document.getElementById("currencyDropdown");
 
 // General text
 const missingInputWarning = "Udfyld felter";
@@ -34,7 +35,6 @@ btns.forEach(function (btn) {
         const styles = e.currentTarget.classList;
 
         if (styles.contains("afkast")) {
-
             if (validateInputsAfkastBtn()) {
                 if (currencyDropdown.value === "dkk") {
                     capitalGainDK();
@@ -54,98 +54,52 @@ btns.forEach(function (btn) {
     });
 });
 
-inputs.forEach((input, index) => {
-    input.addEventListener("keydown", (event) => {
-        if (event.ctrlKey && event.key === "ArrowUp" || event.key === "ArrowLeft") {
-            event.preventDefault();
-
-            const previousIndex = (index - 1 + inputs.length) % inputs.length;
-            inputs[previousIndex].focus();
+function handleInputKeyDown(event) {
+    if (event.ctrlKey && event.keyCode === 13) { // event.keyCode === 13 -> pressing enter
+        event.preventDefault();
+        reset();
+    } else if (event.keyCode === 13) {
+        event.preventDefault();
+        if (validateInputsAfkastBtn()) {
+            if (currencyDropdown.value === "dkk") {
+                capitalGainDK();
+            } else if (currencyDropdown.value === "usd") {
+                capitalGainUSD();
+            } else {
+                capitalGainEURO();
+            }
         }
+    }
+}
 
-        if (event.ctrlKey && event.key === 'ArrowDown' || event.key === "ArrowRight") {
-            event.preventDefault();
-            const nextIndex = (index + 1) % inputs.length;
-            inputs[nextIndex].focus();
-        }
+// Add event listeners to all relevant input fields
+function addNavigationListeners() {
+    inputs = Array.from(document.querySelectorAll(".form-input")); // Update inputs list
+
+    inputs.forEach((input) => {
+        input.addEventListener("keydown", (event) => {
+            if (event.ctrlKey && (event.key === "ArrowUp" || event.key === "ArrowLeft")) {
+                event.preventDefault();
+                const index = inputs.indexOf(event.target);
+                const previousIndex = (index - 1 + inputs.length) % inputs.length;
+                inputs[previousIndex].focus();
+            }
+
+            if (event.ctrlKey && (event.key === 'ArrowDown' || event.key === "ArrowRight")) {
+                event.preventDefault();
+                const index = inputs.indexOf(event.target);
+                const nextIndex = (index + 1) % inputs.length;
+                inputs[nextIndex].focus();
+            }
+        });
+
+        input.addEventListener("keydown", handleInputKeyDown);
     });
-});
+}
 
-// event.keyCode === 13 <=> Pressing Enter
-currentPriceInput.addEventListener("keydown", function (event) {
-    if (event.ctrlKey && event.keyCode === 13) {
-        event.preventDefault();
-        reset();
-    } else if (event.keyCode === 13) {
-        event.preventDefault();
-        if (validateInputsAfkastBtn()) {
-            if (currencyDropdown.value === "dkk") {
-                capitalGainDK();
-            } else if (currencyDropdown.value === "usd") {
-                capitalGainUSD();
-            } else {
-                capitalGainEURO();
-            }
-        }
-    }
-});
+// Initial setup of navigation listeners
+addNavigationListeners();
 
-salesPriceInput.addEventListener("keydown", function (event) {
-    if (event.ctrlKey && event.keyCode === 13) {
-        event.preventDefault();
-        reset();
-    } else if (event.keyCode === 13) {
-        event.preventDefault();
-        if (validateInputsAfkastBtn()) {
-            if (currencyDropdown.value === "dkk") {
-                capitalGainDK();
-            } else if (currencyDropdown.value === "usd") {
-                capitalGainUSD();
-            } else {
-                capitalGainEURO();
-            }
-        }
-    }
-});
-
-shareAmountInput.addEventListener("keydown", function (event) {
-    if (event.ctrlKey && event.keyCode === 13) {
-        event.preventDefault();
-        reset();
-    } else if (event.keyCode === 13) {
-        event.preventDefault();
-        if (validateInputsAfkastBtn()) {
-            if (currencyDropdown.value === "dkk") {
-                capitalGainDK();
-            } else if (currencyDropdown.value === "usd") {
-                capitalGainUSD();
-            } else {
-                capitalGainEURO();
-            }
-        }
-    }
-});
-
-exchangeFeeInput.addEventListener("keydown", function (event) {
-    if (event.ctrlKey && event.keyCode === 13) {
-        event.preventDefault();
-        reset();
-    } else if (event.keyCode === 13) {
-        event.preventDefault();
-        if (validateInputsAfkastBtn()) {
-            if (currencyDropdown.value === "dkk") {
-                capitalGainDK();
-            } else if (currencyDropdown.value === "usd") {
-                capitalGainUSD();
-            } else {
-                capitalGainEURO();
-            }
-        }
-    }
-});
-
-
-// Functions
 function validateInputsAfkastBtn() {
     let currentPrice = parseFloat(currentPriceInput.value);
     let salesPrice = parseFloat(salesPriceInput.value);
@@ -217,7 +171,6 @@ function capitalGainUSD() {
 }
 
 function capitalGainEURO() {
-
     if (!validateInputsAfkastBtn()) {
         return;
     }
@@ -257,7 +210,7 @@ function shareDifference() {
 function profitAfterBrokerageAndTax(profitBeforeCost) {
     let brokerage = 20; // 20 kr. i kurtage (2x 10 kr.)
     let tax = 1 - 0.17;
-    let exchangeFee = parseFloat(exchangeFeeInput.value);
+    let exchangeFee = exchangeFeeInput ? parseFloat(exchangeFeeInput.value) : 0; // Handle case when exchangeFeeInput might be null
 
     profitBeforeCost -= exchangeFee;
 
@@ -324,7 +277,50 @@ function reset() {
     currentPriceInput.value = "";
     salesPriceInput.value = "";
     shareAmountInput.value = "";
-    exchangeFeeInput.value = "";
+    if (exchangeFeeInput) {
+        exchangeFeeInput.value = ""; // Handle case when exchangeFeeInput might be null
+    }
 
     returnValue.style.color = grey;
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
+
+    function updateVekselgebyrField() {
+        const selectedCurrency = currencyDropdown.value;
+
+        // Check if the input field already exists
+        let vekselgebyrGroup = document.getElementById("vekselgebyrGroup");
+
+        if (selectedCurrency === "dkk") {
+            if (vekselgebyrGroup) {
+                form.removeChild(vekselgebyrGroup); // Remove the field if it exists
+                exchangeFeeInput = null; // Update reference to reflect removal
+            }
+        }
+        else {
+            if (!vekselgebyrGroup) {
+                // Create the field if it does not exist
+                vekselgebyrGroup = document.createElement("div");
+                vekselgebyrGroup.className = "group";
+                vekselgebyrGroup.id = "vekselgebyrGroup";
+                vekselgebyrGroup.innerHTML = `
+                    <input type="number" id="vekselgebyr" placeholder=" " class="form-input veksel">
+                    <label for="vekselgebyr">Vekselgebyr</label>
+                `;
+                form.appendChild(vekselgebyrGroup);
+                exchangeFeeInput = document.getElementById("vekselgebyr"); // Update reference
+            }
+        }
+
+        // Update the inputs array and add navigation listeners
+        addNavigationListeners();
+    }
+
+    // Initial check when the page loads
+    updateVekselgebyrField();
+
+    // Update the field when the dropdown value changes
+    currencyDropdown.addEventListener("change", updateVekselgebyrField);
+});
