@@ -13,10 +13,6 @@
 </head>
 
 <body>
-  <!-- <p class="footer">
-    <a href="https://github.com/Nicolaj2903/JS_ShareHelper.git" target="_blank">Project</a> by <a
-      href="https://github.com/Nicolaj2903" target="_blank">Nicolaj</a>
-  </p> -->
   <main>
     <div class="container">
       <span id="value">0</span>
@@ -24,7 +20,12 @@
       <div class="button-container">
         <button class="btn afkast">Afkast</button>
         <button class="btn reset">Reset</button>
-        <button class="btn procent">Procent</button>
+        <!-- <button class="btn procent">Procent</button> -->
+        <select class="dropdown-currency" id="currencyDropdown">
+          <option value="dkk">DKK</option>
+          <option value="usd">USD</option>
+          <option value="euro">EURO</option>
+        </select>
       </div>
 
       <form>
@@ -44,19 +45,28 @@
         </div>
       </form>
 
-      <div class="dropdown-container">
+      <!-- <div class="dropdown-container">
         <select class="dropdown-currency" id="currencyDropdown">
           <option value="dkk">DKK</option>
           <option value="usd">USD</option>
           <option value="euro">EURO</option>
         </select>
-      </div>
+      </div> -->
+
+      <p class="footer">
+        <a href="https://github.com/Nicolaj2903/JS_ShareHelper.git" target="_blank">Project</a> by <a
+          href="https://github.com/Nicolaj2903" target="_blank">Nicolaj</a>
+      </p>
 
       <span class="tooltip-container">
         <i class="bi bi-question-circle"></i>
         <span class="tooltip-text">
-          <h4>Resultat</h4>
-          Afkast efter kurtage (20 kr.) og skat (17%)
+          <h4>Omkostninger</h4>
+          <ul>
+            <li>Kurtage: 20 kr.</li>
+            <li>Skat: 17%</li>
+          </ul>
+          <!-- Afkast efter kurtage (20 kr.) og skat (17%) -->
           <h4>Input felter</h4>
           <ul>
             <li>
@@ -72,6 +82,11 @@
                 style="width: 32px; height: auto; vertical-align: middle;"> + <img src="Images/32px_arrowkeys_key.png"
                 alt="Arrowkeys key icon" style="width: 32px; height: auto; vertical-align: middle;">
             </li>
+          </ul>
+          <h4>Kurs</h4>
+          <ul>
+            <li>USD: 6,86 kr.</li>
+            <li>Euro: 7,46 kr.</li>
           </ul>
         </span>
       </span>
