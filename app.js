@@ -13,43 +13,35 @@ const grey = "#222";
 
 // Buttons
 const btns = document.querySelectorAll(".btn");
-const toggleModeButton = document.querySelector(".mode-toggle");
 
 // Inputs
 const currentPriceInput = document.getElementById("currentPrice");
 const salesPriceInput = document.getElementById("salesPrice");
 const shareAmountInput = document.getElementById("shareAmount");
-const exchangeFeeInput = document.getElementById("vekselgebyr");
-const inputs = document.querySelectorAll(".form-input");
+let exchangeFeeInput = document.getElementById("vekselgebyr");
+let inputs = Array.from(document.querySelectorAll(".form-input"));
+// Array.from() - converts NodeList to an array to access array methods, map(), filter(), reduce()
 
 // Dropdown
-const currencyDropdown = document.querySelector(".dropdown-currency");
+const currencyDropdown = document.getElementById("currencyDropdown");
 
 // General text
 const missingInputWarning = "Udfyld felter";
 const invalidInputWarning = "Ugyldig input";
 
-// Object-literal
-const currencies = {
-    "dkk": capitalGainDK,
-    "usd": capitalGainUSD,
-    "euro": capitalGainEURO
-};
-
 // Event listeners
-currencyDropdown.addEventListener("change", function () {
-    toggleExchangeFee();
-});
-
 btns.forEach(function (btn) {
     btn.addEventListener("click", function (e) {
         const styles = e.currentTarget.classList;
 
         if (styles.contains("afkast")) {
             if (validateInputsAfkastBtn()) {
-                const selectedCurrency = currencyDropdown.value.toLowerCase();
-                if (currencies[selectedCurrency]) {
-                    currencies[selectedCurrency]();
+                if (currencyDropdown.value === "dkk") {
+                    capitalGainDK();
+                } else if (currencyDropdown.value === "usd") {
+                    capitalGainUSD();
+                } else {
+                    capitalGainEURO();
                 }
             }
         } else if (styles.contains("procent")) {
@@ -62,46 +54,64 @@ btns.forEach(function (btn) {
     });
 });
 
-inputs.forEach((input, index) => {
-    input.addEventListener("keydown", (event) => {
-        if ((event.ctrlKey && event.key === "ArrowUp") || event.key === "ArrowLeft") {
-            event.preventDefault();
-            const previousIndex = (index - 1 + inputs.length) % inputs.length;
-            inputs[previousIndex].focus();
-        }
-
-        if ((event.ctrlKey && event.key === 'ArrowDown') || event.key === "ArrowRight") {
-            event.preventDefault();
-            const nextIndex = (index + 1) % inputs.length;
-            inputs[nextIndex].focus();
-        }
-    });
-});
-
-// Handle Enter key press
-function handleEnterKey(event, action) {
-    if (event.ctrlKey && event.keyCode === 13) {
+function handleInputKeyDown(event) {
+    if (event.ctrlKey && event.keyCode === 13) { // event.keyCode === 13 -> pressing enter
         event.preventDefault();
         reset();
     } else if (event.keyCode === 13) {
         event.preventDefault();
         if (validateInputsAfkastBtn()) {
-            action();
+            if (currencyDropdown.value === "dkk") {
+                capitalGainDK();
+            } else if (currencyDropdown.value === "usd") {
+                capitalGainUSD();
+            } else {
+                capitalGainEURO();
+            }
         }
     }
 }
 
-currentPriceInput.addEventListener("keydown", (event) => handleEnterKey(event, capitalGainDK));
-salesPriceInput.addEventListener("keydown", (event) => handleEnterKey(event, capitalGainDK));
-shareAmountInput.addEventListener("keydown", (event) => handleEnterKey(event, capitalGainDK));
+// Add event listeners to all relevant input fields
+function addNavigationListeners() {
+    inputs = Array.from(document.querySelectorAll(".form-input")); // Update inputs list
 
-// Functions
+    inputs.forEach((input) => {
+        input.addEventListener("keydown", (event) => {
+            if (event.ctrlKey && (event.key === "ArrowUp" || event.key === "ArrowLeft")) {
+                event.preventDefault();
+                const index = inputs.indexOf(event.target);
+                const previousIndex = (index - 1 + inputs.length) % inputs.length;
+                inputs[previousIndex].focus();
+            }
+
+            if (event.ctrlKey && (event.key === 'ArrowDown' || event.key === "ArrowRight")) {
+                event.preventDefault();
+                const index = inputs.indexOf(event.target);
+                const nextIndex = (index + 1) % inputs.length;
+                inputs[nextIndex].focus();
+            }
+        });
+
+        input.addEventListener("keydown", handleInputKeyDown);
+    });
+}
+
+// Initial setup of navigation listeners
+addNavigationListeners();
+
 function validateInputsAfkastBtn() {
     let currentPrice = parseFloat(currentPriceInput.value);
     let salesPrice = parseFloat(salesPriceInput.value);
     let shareAmount = parseFloat(shareAmountInput.value);
 
-    if (isNaN(currentPrice) || isNaN(salesPrice) || isNaN(shareAmount) || currentPrice < 0 || salesPrice < 0 || shareAmount < 0) {
+    if (isNaN(currentPrice) || isNaN(salesPrice) || isNaN(shareAmount)) {
+        returnValue.textContent = missingInputWarning;
+        returnValue.style.color = red;
+        return false;
+    }
+
+    if (currentPrice < 0 || salesPrice < 0 || shareAmount < 0) {
         returnValue.textContent = missingInputWarning;
         returnValue.style.color = red;
         return false;
@@ -114,8 +124,15 @@ function validateInputsAfkastBtn() {
 function validateInputsProcentBtn() {
     let currentPrice = parseFloat(currentPriceInput.value);
     let salesPrice = parseFloat(salesPriceInput.value);
+    let shareAmount = parseFloat(shareAmountInput.value);
 
-    if (isNaN(currentPrice) || isNaN(salesPrice) || currentPrice < 0 || salesPrice < 0) {
+    if (isNaN(currentPrice) || isNaN(salesPrice)) {
+        returnValue.textContent = missingInputWarning;
+        returnValue.style.color = red;
+        return false;
+    }
+
+    if (currentPrice < 0 || salesPrice < 0 || shareAmount < 0) {
         returnValue.textContent = missingInputWarning;
         returnValue.style.color = red;
         return false;
@@ -135,37 +152,35 @@ function capitalGainDK() {
     let profit = calculateProfitAfterCosts(shareAmount);
     let formattedNumber = formatNumber(profit);
 
-    returnValue.textContent = formattedNumber + " DKK";
+    returnValue.textContent = formattedNumber + " kr.";
     colorDecider(profit);
 }
 
 function capitalGainUSD() {
-    let shareAmount = parseFloat(shareAmountInput.value);
-
     if (!validateInputsAfkastBtn()) {
         return;
     }
 
+    let shareAmount = parseFloat(shareAmountInput.value);
+
     let profit = calculateProfitAfterCosts(shareAmount);
     let formattedNumber = formatNumber(profit);
 
-    returnValue.textContent = formattedNumber + " USD";
+    returnValue.textContent = formattedNumber + " kr.";
     colorDecider(profit);
 }
 
 function capitalGainEURO() {
-    let currentPrice = parseFloat(currentPriceInput.value);
-    let salesPrice = parseFloat(salesPriceInput.value);
-    let shareAmount = parseFloat(shareAmountInput.value);
-
     if (!validateInputsAfkastBtn()) {
         return;
     }
 
+    let shareAmount = parseFloat(shareAmountInput.value);
+
     let profit = calculateProfitAfterCosts(shareAmount);
     let formattedNumber = formatNumber(profit);
 
-    returnValue.textContent = formattedNumber + " EURO";
+    returnValue.textContent = formattedNumber + " kr.";
     colorDecider(profit);
 }
 
@@ -195,29 +210,28 @@ function shareDifference() {
 function profitAfterBrokerageAndTax(profitBeforeCost) {
     let brokerage = 20; // 20 kr. i kurtage (2x 10 kr.)
     let tax = 1 - 0.17;
-    let exchangeFee = calculateExchangeFee();
+    let exchangeFee = exchangeFeeInput ? parseFloat(exchangeFeeInput.value) : 0; // Handle case when exchangeFeeInput might be null
 
-    profitBeforeCost -= brokerage;
     profitBeforeCost -= exchangeFee;
-    profitBeforeCost *= tax;
 
-    return profitBeforeCost;
+    let profitInDKK = convertCurrencyToDKK(profitBeforeCost);
+
+    profitInDKK -= brokerage;
+    profitInDKK *= tax;
+
+    return profitInDKK;
 }
 
-function calculateExchangeFee() {
+function convertCurrencyToDKK(valuta) {
     let currency = currencyDropdown.value.toLowerCase();
-    let exchangeFee = 0;
 
-    if (currency === "dkk") {
-        exchangeFee = 0;
-    } else if (currency === "usd") {
-        let usdAmount = parseFloat(exchangeFeeInput.value);
-        exchangeFee = usdAmount * USD;
+    if (currency === "usd") {
+        return valuta * USD;
     } else if (currency === "euro") {
-        let euroAmount = parseFloat(exchangeFeeInput.value);
-        exchangeFee = euroAmount * EURO;
+        return valuta * EURO;
+    } else {
+        return valuta; // Already in DKK
     }
-    return exchangeFee;
 }
 
 function formatNumber(number) {
@@ -247,7 +261,7 @@ function colorDecider(value) {
 }
 
 function calculateProcentage() {
-    let currentPrice = parseFloat(currentPriceInput.value);
+    let currentPrice = currentPriceInput.value;
     let calculatedProcentage = 0;
 
     let profitPerShare = shareDifference();
@@ -256,29 +270,59 @@ function calculateProcentage() {
     colorDecider(calculatedProcentage);
 
     returnValue.textContent = calculatedProcentage.toFixed(1) + "%";
-}
+};
 
 function reset() {
     returnValue.textContent = 0;
     currentPriceInput.value = "";
     salesPriceInput.value = "";
     shareAmountInput.value = "";
-    exchangeFeeInput.value = "";
+    if (exchangeFeeInput) {
+        exchangeFeeInput.value = ""; // Handle case when exchangeFeeInput might be null
+    }
 
     returnValue.style.color = grey;
 }
 
-function toggleExchangeFee() {
-    const vekselgebyrGroup = document.getElementById("vekselgebyrGroup");
-    const selectedCurrency = currencyDropdown.value.toLowerCase();
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
 
-    if (selectedCurrency === "dkk") {
-        vekselgebyrGroup.style.display = "none";
-    } else {
-        vekselgebyrGroup.style.display = "block";
+    function updateVekselgebyrField() {
+        const selectedCurrency = currencyDropdown.value;
+
+        reset()
+
+        // Check if the input field already exists
+        let vekselgebyrGroup = document.getElementById("vekselgebyrGroup");
+
+        if (selectedCurrency === "dkk") {
+            if (vekselgebyrGroup) {
+                form.removeChild(vekselgebyrGroup); // Remove the field if it exists
+                exchangeFeeInput = null; // Update reference to reflect removal
+            }
+        }
+        else {
+            if (!vekselgebyrGroup) {
+                // Create the field if it does not exist
+                vekselgebyrGroup = document.createElement("div");
+                vekselgebyrGroup.className = "group";
+                vekselgebyrGroup.id = "vekselgebyrGroup";
+                vekselgebyrGroup.innerHTML = `
+                    <input type="number" id="vekselgebyr" placeholder=" " class="form-input veksel">
+                    <label for="vekselgebyr">Vekselgebyr</label>
+                `;
+                form.appendChild(vekselgebyrGroup);
+                exchangeFeeInput = document.getElementById("vekselgebyr"); // Update reference
+            }
+        }
+
+        // Update the inputs array and add navigation listeners
+        addNavigationListeners();
     }
-}
 
-document.addEventListener("DOMContentLoaded", function () {
-    toggleExchangeFee();
+    // Initial check when the page loads
+    updateVekselgebyrField();
+
+    // Update the field when the dropdown value changes
+    currencyDropdown.addEventListener("change", updateVekselgebyrField);
 });
