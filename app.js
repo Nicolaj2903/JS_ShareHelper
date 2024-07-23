@@ -152,7 +152,7 @@ function capitalGainDK() {
     let profit = calculateProfitAfterCosts(shareAmount);
     let formattedNumber = formatNumber(profit);
 
-    returnValue.textContent = formattedNumber + " DKK";
+    returnValue.textContent = formattedNumber + " kr";
     colorDecider(profit);
 }
 
@@ -166,7 +166,7 @@ function capitalGainUSD() {
     let profit = calculateProfitAfterCosts(shareAmount);
     let formattedNumber = formatNumber(profit);
 
-    returnValue.textContent = formattedNumber + " USD";
+    returnValue.textContent = formattedNumber + " kr";
     colorDecider(profit);
 }
 
@@ -180,7 +180,7 @@ function capitalGainEURO() {
     let profit = calculateProfitAfterCosts(shareAmount);
     let formattedNumber = formatNumber(profit);
 
-    returnValue.textContent = formattedNumber + " EURO";
+    returnValue.textContent = formattedNumber + " kr";
     colorDecider(profit);
 }
 
