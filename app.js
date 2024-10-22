@@ -208,8 +208,8 @@ function shareDifference() {
 }
 
 function profitAfterBrokerageAndTax(profitBeforeCost) {
-    let brokerage = 20; // 20 kr. i kurtage (2x 10 kr.)
-    let tax = 1 - 0.17;
+    let brokerage = 60; // 60 kr. i kurtage (2x 30 kr.)
+    let tax = 1 - 0.27;
     let exchangeFee = exchangeFeeInput ? parseFloat(exchangeFeeInput.value) : 0; // Handle case when exchangeFeeInput might be null
 
     profitBeforeCost -= exchangeFee;
