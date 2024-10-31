@@ -70,7 +70,7 @@ function handleInputKeyDown(event) {
             }
         }
     }
-}
+};
 
 // Add event listeners to all relevant input fields
 function addNavigationListeners() {
@@ -95,7 +95,7 @@ function addNavigationListeners() {
 
         input.addEventListener("keydown", handleInputKeyDown);
     });
-}
+};
 
 // Initial setup of navigation listeners
 addNavigationListeners();

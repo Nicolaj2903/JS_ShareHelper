@@ -31,6 +31,61 @@ btns.forEach(function (btn) {
     });
 });
 
+function handleInputKeyDown(event) {
+    if (event.ctrlKey && event.keyCode === 13) { // event.keyCode === 13 -> pressing enter
+        event.preventDefault();
+        reset();
+    } else if (event.keyCode === 13) {
+        event.preventDefault();
+        calculateNewGAK();
+    }
+};
+
+// Add event listeners to all relevant input fields
+function addNavigationListeners() {
+    inputs = Array.from(document.querySelectorAll(".form-input")); // Update inputs list
+
+    inputs.forEach((input) => {
+        input.addEventListener("keydown", (event) => {
+            if (event.ctrlKey && (event.key === "ArrowUp" || event.key === "ArrowLeft")) {
+                event.preventDefault();
+                const index = inputs.indexOf(event.target);
+                const previousIndex = (index - 1 + inputs.length) % inputs.length;
+                inputs[previousIndex].focus();
+            }
+
+            if (event.ctrlKey && (event.key === 'ArrowDown' || event.key === "ArrowRight")) {
+                event.preventDefault();
+                const index = inputs.indexOf(event.target);
+                const nextIndex = (index + 1) % inputs.length;
+                inputs[nextIndex].focus();
+            }
+        });
+        input.addEventListener("keydown", handleInputKeyDown);
+    });
+};
+
+// Initial setup of navigation listeners
+addNavigationListeners();
+
+function colorDecider(value) {
+    if (value > 0) {
+        returnValue.style.color = green;
+    } else if (value < 0) {
+        returnValue.style.color = red;
+    } else {
+        returnValue.style.color = grey;
+    }
+};
+
+function reset() {
+    returnValue.textContent = 0;
+    amountOfShares.value = "";
+    currentGAK.value = "";
+    investmentInput.value = "";
+    priceInput.value = "";
+    returnValue.style.color = grey;
+};
 
 function calculateNewGAK() {
     let investment = parseFloat(investmentInput.value);
