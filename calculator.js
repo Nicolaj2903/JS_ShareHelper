@@ -90,15 +90,16 @@ function reset() {
 function calculateNewGAK() {
     let investment = parseFloat(investmentInput.value);
     let brokage = 30; // Kurtage
-    let totalNewInvestmentWithBrokage = investment + brokage;
+    let exchangeFee = investment * 0.0025; // Vekselgebyr (0.25%)
+    let totalNewInvestmentWithFees = investment + brokage + exchangeFee;
     
     let previousAmountOfShares = parseFloat(amountOfShares.value);
-    let oldGAK = parseFloat(currentGAK.value)   ;
+    let oldGAK = parseFloat(currentGAK.value);
     let totalOldInvestment = previousAmountOfShares * oldGAK;
 
     let totalAmountOfShares = previousAmountOfShares + calculateTotalAmountOfShares();
 
-    let newGAK = (totalOldInvestment + totalNewInvestmentWithBrokage)/totalAmountOfShares;
+    let newGAK = (totalOldInvestment + totalNewInvestmentWithFees) / totalAmountOfShares;
     let formattedNumber = formatNumber(newGAK);
     returnValue.textContent = formattedNumber;
 }
@@ -106,8 +107,8 @@ function calculateNewGAK() {
 function calculateTotalAmountOfShares() {
     let shareTotal = 0;
     let investment = parseFloat(investmentInput.value);
-    let price = parseFloat(priceInput.value)
-    shareTotal = investment/price;
+    let price = parseFloat(priceInput.value);
+    shareTotal = investment / price;
     
     return shareTotal;
 };
