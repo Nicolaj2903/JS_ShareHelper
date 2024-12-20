@@ -10,8 +10,8 @@ const grey = "#222";
 const btns = document.querySelectorAll(".btn");
 
 // Inputs
-const amountOfShares = document.getElementById("amountOfShares");
-const currentGAK = document.getElementById("currentGAK");
+const amountOfSharesInput = document.getElementById("amountOfShares");
+const currentGAKInput = document.getElementById("currentGAK");
 const investmentInput = document.getElementById("investment");
 const priceInput = document.getElementById("price");
 let inputs = Array.from(document.querySelectorAll(".form-input"));
@@ -19,6 +19,9 @@ let inputs = Array.from(document.querySelectorAll(".form-input"));
 // General text
 const missingInputWarning = "Udfyld felter";
 const invalidInputWarning = "Ugyldig input";
+
+// Brokerage
+const brokage = 30; // 30 kr.
 
 // Event listeners
 btns.forEach(function (btn) {
@@ -80,29 +83,48 @@ function colorDecider(value) {
 
 function reset() {
     returnValue.textContent = 0;
-    amountOfShares.value = "";
-    currentGAK.value = "";
+    amountOfSharesInput.value = "";
+    currentGAKInput.value = "";
     investmentInput.value = "";
     priceInput.value = "";
     returnValue.style.color = grey;
 };
 
 function calculateNewGAK() {
-    let investment = parseFloat(investmentInput.value);
-    let brokage = 30; // Kurtage
-    let exchangeFee = investment * 0.0025; // Vekselgebyr (0.25%)
-    let totalNewInvestmentWithFees = investment + brokage + exchangeFee;
-    
-    let previousAmountOfShares = parseFloat(amountOfShares.value);
-    let oldGAK = parseFloat(currentGAK.value);
-    let totalOldInvestment = previousAmountOfShares * oldGAK;
+    let sharesCurrentAmount = parseFloat(amountOfSharesInput.value);
+    let currentGAK = parseFloat(currentGAKInput.value);
+    let intitalInvestmentAmount = parseFloat(investmentInput.value);
+    let currentSharePrice = parseFloat(priceInput.value);
 
-    let totalAmountOfShares = previousAmountOfShares + calculateTotalAmountOfShares();
+    let newAmountOfShares = Math.floor(intitalInvestmentAmount / currentSharePrice); // Kun hele tal
+    let actualInvestmentAmount = (newAmountOfShares * currentSharePrice) + brokage;
 
-    let newGAK = (totalOldInvestment + totalNewInvestmentWithFees) / totalAmountOfShares;
-    let formattedNumber = formatNumber(newGAK);
-    returnValue.textContent = formattedNumber;
+    let currentValue = currentGAK * sharesCurrentAmount;
+
+    let totalShares = newAmountOfShares + sharesCurrentAmount;
+
+    let newGAK = (currentValue + actualInvestmentAmount) / totalShares;
+
+    let formatNewGAK = formatNumber(newGAK);
+    returnValue.textContent = formatNewGAK;
 }
+
+// function calculateNewGAK() {
+// let investment = parseFloat(investmentInput.value);
+// let brokage = 30; // Kurtage
+// let exchangeFee = investment * 0.0025; // Vekselgebyr (0.25%)
+// let totalNewInvestmentWithFees = investment + brokage + exchangeFee;
+
+// let previousAmountOfShares = parseFloat(amountOfShares.value);
+// let oldGAK = parseFloat(currentGAK.value);
+// let totalOldInvestment = previousAmountOfShares * oldGAK;
+
+// let totalAmountOfShares = previousAmountOfShares + calculateTotalAmountOfShares();
+
+// let newGAK = (totalOldInvestment + totalNewInvestmentWithFees) / totalAmountOfShares;
+// let formattedNumber = formatNumber(newGAK);
+// returnValue.textContent = formattedNumber;
+// }
 
 function calculateTotalAmountOfShares() {
     let shareTotal = 0;
