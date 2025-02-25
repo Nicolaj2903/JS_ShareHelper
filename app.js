@@ -37,10 +37,13 @@ btns.forEach(function (btn) {
         if (styles.contains("afkast")) {
             if (validateInputsAfkastBtn()) {
                 if (currencyDropdown.value === "dkk") {
+                    console.log("DKK test");
                     capitalGainDK();
                 } else if (currencyDropdown.value === "usd") {
+                    console.log("USD test");
                     capitalGainUSD();
                 } else {
+                    console.log("EURO test");
                     capitalGainEURO();
                 }
             }

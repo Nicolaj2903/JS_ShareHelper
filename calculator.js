@@ -16,6 +16,9 @@ const investmentInput = document.getElementById("investment");
 const priceInput = document.getElementById("price");
 let inputs = Array.from(document.querySelectorAll(".form-input"));
 
+// Valuta valg
+const currencyDropdown = document.getElementById("currencyDropdown");
+
 // General text
 const missingInputWarning = "Udfyld felter";
 const invalidInputWarning = "Ugyldig input";
@@ -23,13 +26,17 @@ const invalidInputWarning = "Ugyldig input";
 // Brokerage
 const brokage = 30; // 30 kr.
 
+// Kurs
+let usdKurs = 7.24;   // 1 USD  = 7,24 DKK
+let euroKurs = 7.46;  // 1 Euro = 7,46 DKK
+
 // Event listeners
 btns.forEach(function (btn) {
     btn.addEventListener("click", function (e) {
         const styles = e.currentTarget.classList;
 
         if (styles.contains("newGAK")) {
-            calculateNewGAK();
+            GAKWithExchangeFeeUSD();
         }
     });
 });
@@ -40,7 +47,7 @@ function handleInputKeyDown(event) {
         reset();
     } else if (event.keyCode === 13) {
         event.preventDefault();
-        calculateNewGAK();
+        GAKWithExchangeFeeUSD();
     }
 };
 
@@ -90,24 +97,24 @@ function reset() {
     returnValue.style.color = grey;
 };
 
-function calculateNewGAK() {
-    let sharesCurrentAmount = parseFloat(amountOfSharesInput.value);
-    let currentGAK = parseFloat(currentGAKInput.value);
-    let intitalInvestmentAmount = parseFloat(investmentInput.value);
-    let currentSharePrice = parseFloat(priceInput.value);
+// function calculateNewGAK() {
+//     let sharesCurrentAmount = parseFloat(amountOfSharesInput.value);
+//     let currentGAK = parseFloat(currentGAKInput.value);
+//     let intitalInvestmentAmount = parseFloat(investmentInput.value);
+//     let currentSharePrice = parseFloat(priceInput.value);
 
-    let newAmountOfShares = Math.floor(intitalInvestmentAmount / currentSharePrice); // Kun hele tal
-    let actualInvestmentAmount = (newAmountOfShares * currentSharePrice) + brokage;
+//     let newAmountOfShares = Math.floor(intitalInvestmentAmount / currentSharePrice); // Kun hele tal
+//     let actualInvestmentAmount = (newAmountOfShares * currentSharePrice) + brokage;
 
-    let currentValue = currentGAK * sharesCurrentAmount;
+//     let currentValue = currentGAK * sharesCurrentAmount;
 
-    let totalShares = newAmountOfShares + sharesCurrentAmount;
+//     let totalShares = newAmountOfShares + sharesCurrentAmount;
 
-    let newGAK = (currentValue + actualInvestmentAmount) / totalShares;
+//     let newGAK = (currentValue + actualInvestmentAmount) / totalShares;
 
-    let formatNewGAK = formatNumber(newGAK);
-    returnValue.textContent = formatNewGAK;
-}
+//     let formatNewGAK = formatNumber(newGAK);
+//     returnValue.textContent = formatNewGAK;
+// }
 
 // function calculateNewGAK() {
 // let investment = parseFloat(investmentInput.value);
@@ -129,10 +136,19 @@ function calculateNewGAK() {
 function calculateTotalAmountOfShares() {
     let shareTotal = 0;
     let investment = parseFloat(investmentInput.value);
-    let price = parseFloat(priceInput.value);
-    shareTotal = investment / price;
-    
-    return shareTotal;
+    let kurs = parseFloat(priceInput.value);
+
+    if (currencyDropdown.value === "usd") {
+        shareTotal = investment / usdKurs;
+    } else if (currencyDropdown.value === "euro") {
+        shareTotal = investment / euroKurs;
+    } else {
+        shareTotal = investment / kurs;
+    }
+    console.log("CalculateTotalAmountOfShares: ");
+    console.log("Investment: " + investment + ", kurs: " + kurs + ", shareTotal: " + shareTotal)
+
+    return Math.floor(shareTotal); // Afrunder ned til nærmeste heltal
 };
 
 function formatNumber(number) {
@@ -149,4 +165,51 @@ function formatNumber(number) {
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         return parts.join(",");
     }
+}
+
+function GAKWithExchangeFeeUSD() {
+    // Inputs
+    let antalGamleAktier = parseFloat(amountOfSharesInput.value);
+    console.log("Antal gamle aktier: " + antalGamleAktier)
+    let nuværendeGAK = parseFloat(currentGAKInput.value);
+    let investeringsBeløb = parseFloat(investmentInput.value);
+    let nuværendeKurs = parseFloat(priceInput.value);
+
+    if (currencyDropdown.value === "usd") {
+        investeringsBeløb = investeringsBeløb / usdKurs;
+        console.log("USD: " + investeringsBeløb)
+    } else if (currencyDropdown.value === "euro") {
+        investeringsBeløb = investeringsBeløb / euroKurs;
+        console.log("EURO: " + investeringsBeløb)
+    } else {
+        investeringsBeløb = investeringsBeløb;
+        console.log("DKK: " + investeringsBeløb)
+    }
+
+    let antalNyeAktier = calculateTotalAmountOfShares();
+    console.log("Antal nye aktier: " + antalNyeAktier)
+    let reeltInvesteretUSD = antalNyeAktier * nuværendeKurs; // Køber så mange aktier som muligt for det investerede beløb
+
+    let vekselGebyr = investeringsBeløb * 0.0025; // 0,25%
+    console.log("VekselGebyr = " + vekselGebyr + ", investeringsbeløb: " + investeringsBeløb)
+
+    // Total investering
+    let samletNyeInvesteringUSD = reeltInvesteretUSD + vekselGebyr; // Investeret + vekselgebyr
+    let tidligereInvesteretUSD = antalGamleAktier * nuværendeGAK; // Tidligere investeret beløb
+    let investeretIAltUSD = tidligereInvesteretUSD + samletNyeInvesteringUSD; // Tidligere investering + nye investering i USD
+
+    // Udregn nye GAK
+    let antalAktierIalt = antalGamleAktier + antalNyeAktier; // Tidligere købte aktier + ny købte
+    console.log("Antal aktier i alt: " + antalAktierIalt)
+    let nyeGAKUSD = investeretIAltUSD / antalAktierIalt;
+    console.log("Nye GAK USD: " + nyeGAKUSD)
+
+    let prisPrAktieDKK = nyeGAKUSD * usdKurs;
+    let investeretIAltDKK = prisPrAktieDKK * antalAktierIalt;
+
+    console.log("Investering i alt i DKK: " + formatNumber(investeretIAltDKK))
+    console.log("DKK aktie pris: " + formatNumber(prisPrAktieDKK));
+
+    let formatterNyGAK = formatNumber(nyeGAKUSD);
+    returnValue.textContent = formatterNyGAK;
 }
